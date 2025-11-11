@@ -1,7 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { protect, authorize } = require('../middleware/auth');
-const exhibitionsController = require('../controllers/exhibitions');
+const { protect, authorize } = require("../middleware/auth");
+const exhibitionsController = require("../controllers/exhibitions");
 
 /**
  * @swagger
@@ -14,7 +14,7 @@ const exhibitionsController = require('../controllers/exhibitions');
  * @swagger
  * components:
  *   schemas:
- *     Exhibition:
+ *     CreateExhibitionRequest:
  *       type: object
  *       required:
  *         - name
@@ -25,6 +25,80 @@ const exhibitionsController = require('../controllers/exhibitions');
  *         - smallBoothQuota
  *         - bigBoothQuota
  *         - posterPicture
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Name of the exhibition
+ *         description:
+ *           type: string
+ *           description: Detailed description of the exhibition
+ *         venue:
+ *           type: string
+ *           description: Location where the exhibition will be held
+ *         startDate:
+ *           type: string
+ *           format: date
+ *           description: Start date of the exhibition (cannot be earlier than current date)
+ *         durationDay:
+ *           type: integer
+ *           minimum: 1
+ *           description: Duration of exhibition in days
+ *         smallBoothQuota:
+ *           type: integer
+ *           minimum: 0
+ *           description: Number of small booths available
+ *         bigBoothQuota:
+ *           type: integer
+ *           minimum: 0
+ *           description: Number of big booths available
+ *         posterPicture:
+ *           type: string
+ *           description: URL of the exhibition poster picture
+ *     UpdateExhibitionRequest:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Name of the exhibition
+ *         description:
+ *           type: string
+ *           description: Detailed description of the exhibition
+ *         venue:
+ *           type: string
+ *           description: Location where the exhibition will be held
+ *         startDate:
+ *           type: string
+ *           format: date
+ *           description: Start date of the exhibition (cannot be earlier than current date)
+ *         durationDay:
+ *           type: integer
+ *           minimum: 1
+ *           description: Duration of exhibition in days
+ *         smallBoothQuota:
+ *           type: integer
+ *           minimum: 0
+ *           description: Number of small booths available
+ *         bigBoothQuota:
+ *           type: integer
+ *           minimum: 0
+ *           description: Number of big booths available
+ *         posterPicture:
+ *           type: string
+ *           description: URL of the exhibition poster picture
+ *     ExhibitionResponse:
+ *       type: object
+ *       required:
+ *         - _id
+ *         - name
+ *         - description
+ *         - venue
+ *         - startDate
+ *         - durationDay
+ *         - smallBoothQuota
+ *         - bigBoothQuota
+ *         - posterPicture
+ *         - createdAt
+ *         - updatedAt
  *       properties:
  *         _id:
  *           type: string
@@ -68,6 +142,18 @@ const exhibitionsController = require('../controllers/exhibitions');
  *           format: date-time
  *           description: Auto-generated timestamp of last update
  *           readOnly: true
+ *     PopulatedExhibitionResponse:
+ *       allOf:
+ *         - $ref: '#/components/schemas/ExhibitionResponse'
+ *         - type: object
+ *           required:
+ *             - bookings
+ *           properties:
+ *             bookings:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/BookingResponse'
+ *               description: List of bookings associated with this exhibition
  */
 
 /**
@@ -75,7 +161,7 @@ const exhibitionsController = require('../controllers/exhibitions');
  * /exhibitions:
  *   get:
  *     summary: Get all exhibitions
- *     description: Retrieve all available exhibitions. Accessible by all users.
+ *     description: Retrieve all available exhibitions with populated bookings. Accessible by all users.
  *     tags: [Exhibitions]
  *     responses:
  *       200:
@@ -92,10 +178,10 @@ const exhibitionsController = require('../controllers/exhibitions');
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Exhibition'
+ *                     $ref: '#/components/schemas/PopulatedExhibitionResponse'
  *       500:
  *         description: Server error
- *   
+ *
  *   post:
  *     summary: Create a new exhibition
  *     description: Create a new exhibition. Only accessible by admin users. Start date must not be earlier than current date.
@@ -107,7 +193,7 @@ const exhibitionsController = require('../controllers/exhibitions');
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Exhibition'
+ *             $ref: '#/components/schemas/CreateExhibitionRequest'
  *     responses:
  *       201:
  *         description: Exhibition created successfully
@@ -119,7 +205,7 @@ const exhibitionsController = require('../controllers/exhibitions');
  *                 success:
  *                   type: boolean
  *                 data:
- *                   $ref: '#/components/schemas/Exhibition'
+ *                   $ref: '#/components/schemas/ExhibitionResponse'
  *       400:
  *         description: Invalid input or start date is in the past
  *       401:
@@ -133,7 +219,7 @@ const exhibitionsController = require('../controllers/exhibitions');
  * /exhibitions/{id}:
  *   get:
  *     summary: Get an exhibition by ID
- *     description: Retrieve details of a specific exhibition. Accessible by all users.
+ *     description: Retrieve details of a specific exhibition with populated bookings. Accessible by all users.
  *     tags: [Exhibitions]
  *     parameters:
  *       - in: path
@@ -153,10 +239,10 @@ const exhibitionsController = require('../controllers/exhibitions');
  *                 success:
  *                   type: boolean
  *                 data:
- *                   $ref: '#/components/schemas/Exhibition'
+ *                   $ref: '#/components/schemas/PopulatedExhibitionResponse'
  *       404:
  *         description: Exhibition not found
- *   
+ *
  *   put:
  *     summary: Update an exhibition
  *     description: Update an existing exhibition. Only accessible by admin users.
@@ -175,7 +261,7 @@ const exhibitionsController = require('../controllers/exhibitions');
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Exhibition'
+ *             $ref: '#/components/schemas/UpdateExhibitionRequest'
  *     responses:
  *       200:
  *         description: Exhibition updated successfully
@@ -187,7 +273,7 @@ const exhibitionsController = require('../controllers/exhibitions');
  *                 success:
  *                   type: boolean
  *                 data:
- *                   $ref: '#/components/schemas/Exhibition'
+ *                   $ref: '#/components/schemas/ExhibitionResponse'
  *       400:
  *         description: Invalid input or start date is in the past
  *       401:
@@ -196,7 +282,7 @@ const exhibitionsController = require('../controllers/exhibitions');
  *         description: Admin access required
  *       404:
  *         description: Exhibition not found
- *   
+ *
  *   delete:
  *     summary: Delete an exhibition
  *     description: Delete an exhibition. Only accessible by admin users.
@@ -217,6 +303,9 @@ const exhibitionsController = require('../controllers/exhibitions');
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                - success
+ *                - message
  *               properties:
  *                 success:
  *                   type: boolean
@@ -231,13 +320,15 @@ const exhibitionsController = require('../controllers/exhibitions');
  */
 
 // Routes for /api/v1/exhibitions
-router.route('/')
+router
+  .route("/")
   .get(exhibitionsController.getExhibitions)
-  .post(protect, authorize('admin'), exhibitionsController.createExhibition);
+  .post(protect, authorize("admin"), exhibitionsController.createExhibition);
 
-router.route('/:id')
+router
+  .route("/:id")
   .get(exhibitionsController.getExhibition)
-  .put(protect, authorize('admin'), exhibitionsController.updateExhibition)
-  .delete(protect, authorize('admin'), exhibitionsController.deleteExhibition);
+  .put(protect, authorize("admin"), exhibitionsController.updateExhibition)
+  .delete(protect, authorize("admin"), exhibitionsController.deleteExhibition);
 
 module.exports = router;

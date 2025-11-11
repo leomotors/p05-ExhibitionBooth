@@ -161,7 +161,7 @@ const server = app.listen(
   PORT,
   console.log(
   `BookYourBooth API Server running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${PORT}
-Access Scalar UI at http://localhost:${PORT}/scalar`
+📖 Visit Scalar UI (Alternate Swagger UI) at http://localhost:${PORT}/scalar`
   )
 );
 

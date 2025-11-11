@@ -2,7 +2,7 @@
 * @swagger
 * components:
 *   schemas:
-*     User:
+*     CreateUserSchema:
 *       type: object
 *       required:
 *         - name
@@ -26,6 +26,34 @@
 *         password:
 *           type: string
 *           description: Password of user 
+*         createdAt:
+*           type: string
+*           format: date
+*           example: '2023-08-20'
+*           description: Date of creation (default is current date-time)
+*     UserResponse:
+*       type: object
+*       required:
+*         - name
+*         - email
+*         - tel
+*         - password
+*         - role
+*         - createdAt
+*       properties:
+*         name:
+*           type: string
+*           description: Name of user
+*         email:
+*           type: string
+*           description: Email of user
+*         tel:
+*           type: string
+*           description: Telephone number of user
+*         role:
+*           type: string
+*           enum: [member, admin]
+*           description: Role of user (member or admin), default is member
 *         createdAt:
 *           type: string
 *           format: date
@@ -67,7 +95,7 @@ const { protect } = require("../middleware/auth");
 *       content:
 *         application/json:
 *           schema:
-*             $ref: '#/components/schemas/User'
+*             $ref: '#/components/schemas/CreateUserSchema'
 *     responses:
 *       201:
 *         description: The user was successfully created
@@ -75,6 +103,12 @@ const { protect } = require("../middleware/auth");
 *           application/json:
 *             schema:
 *               type: object
+*               required:
+*                 - success
+*                 - _id
+*                 - name
+*                 - email
+*                 - token
 *               properties:
 *                 success:
 *                   type: boolean
@@ -105,6 +139,9 @@ router.post("/register", register);
 *         application/json:
 *           schema:
 *             type: object
+*             required:
+*               - email
+*               - password
 *             properties: 
 *               email: 
 *                   type: string
@@ -119,6 +156,12 @@ router.post("/register", register);
 *           application/json:
 *             schema:
 *               type: object
+*               required:
+*                 - success
+*                 - _id
+*                 - name
+*                 - email
+*                 - token
 *               properties:
 *                 success:
 *                   type: boolean
@@ -174,7 +217,7 @@ router.get("/logout", protect, logout);
 *                 success:
 *                   type: boolean
 *                 data:
-*                   $ref: '#/components/schemas/User'
+*                   $ref: '#/components/schemas/UserResponse'
 *       401:
 *         description: Not authorized
 *       500:

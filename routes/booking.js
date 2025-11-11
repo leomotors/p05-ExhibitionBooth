@@ -22,6 +22,10 @@ const bookingController = require('../controllers/booking');
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - success
+ *                 - count
+ *                 - data
  *               properties:
  *                 success:
  *                   type: boolean
@@ -31,49 +35,7 @@ const bookingController = require('../controllers/booking');
  *                   type: array
  *                   items:
  *                     type: object
- *                     properties:
- *                       _id:
- *                         type: string
- *                       user:
- *                         type: object
- *                         properties:
- *                           _id:
- *                             type: string
- *                           name:
- *                             type: string
- *                           email:
- *                             type: string
- *                       exhibition:
- *                         type: object
- *                         properties:
- *                           _id:
- *                             type: string
- *                           name:
- *                             type: string
- *                           description:
- *                             type: string
- *                           venue:
- *                             type: string
- *                           startDate:
- *                             type: string
- *                             format: date-time
- *                           durationDay:
- *                             type: integer
- *                           smallBoothQuota:
- *                             type: integer
- *                           bigBoothQuota:
- *                             type: integer
- *                       boothType:
- *                         type: string
- *                         enum: [small, big]
- *                       amount:
- *                         type: integer
- *                       createdAt:
- *                         type: string
- *                         format: date-time
- *                       updatedAt:
- *                         type: string
- *                         format: date-time
+ *                     $ref: '#/components/schemas/PopulatedBooking'
  *       401:
  *         description: Not authorized
  *       500:
@@ -114,54 +76,14 @@ const bookingController = require('../controllers/booking');
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - success
+ *                 - data
  *               properties:
  *                 success:
  *                   type: boolean
  *                 data:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                     user:
- *                       type: object
- *                       properties:
- *                         _id:
- *                           type: string
- *                         name:
- *                           type: string
- *                         email:
- *                           type: string
- *                     exhibition:
- *                       type: object
- *                       properties:
- *                         _id:
- *                           type: string
- *                         name:
- *                           type: string
- *                         description:
- *                           type: string
- *                         venue:
- *                           type: string
- *                         startDate:
- *                           type: string
- *                           format: date-time
- *                         durationDay:
- *                           type: integer
- *                         smallBoothQuota:
- *                           type: integer
- *                         bigBoothQuota:
- *                           type: integer
- *                     boothType:
- *                       type: string
- *                       enum: [small, big]
- *                     amount:
- *                       type: integer
- *                     createdAt:
- *                       type: string
- *                       format: date-time
- *                     updatedAt:
- *                       type: string
- *                       format: date-time
+ *                   $ref: '#/components/schemas/PopulatedBooking'
  *       400:
  *         description: Invalid request - Total booths per exhibition must not exceed 6 or quota exceeded
  *       401:
@@ -183,7 +105,8 @@ router.post('/', protect, authorize('member'), bookingController.createBooking);
  * @swagger
  * /booking/{id}:
  *   get:
- *     summary: Get a booking by ID (admin can view any booking, member can only view their own)
+ *     summary: Get a booking by ID
+ *     description: admin can view any booking, member can only view their own
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
@@ -201,18 +124,22 @@ router.post('/', protect, authorize('member'), bookingController.createBooking);
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - success
+ *                 - data
  *               properties:
  *                 success:
  *                   type: boolean
  *                 data:
- *                   $ref: '#/components/schemas/Booking'
+ *                   $ref: '#/components/schemas/PopulatedBooking'
  *       401:
  *         description: Unauthorized
  *       404:
  *         description: Booking not found
  *       
  *   put:
- *     summary: Update booking (admin can update any booking, member can only update their own)
+ *     summary: Update booking
+ *     description: admin can update any booking, member can only update their own
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
@@ -248,11 +175,14 @@ router.post('/', protect, authorize('member'), bookingController.createBooking);
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - success
+ *                 - data
  *               properties:
  *                 success:
  *                   type: boolean
  *                 data:
- *                   $ref: '#/components/schemas/Booking'
+ *                   $ref: '#/components/schemas/PopulatedBooking'
  *       400:
  *         description: Validation error or booth quota exceeded
  *       401:
@@ -261,7 +191,8 @@ router.post('/', protect, authorize('member'), bookingController.createBooking);
  *         description: Booking not found
  *   
  *   delete:
- *     summary: Delete booking (admin can delete any booking, member can only delete their own)
+ *     summary: Delete booking
+ *     description: admin can delete any booking, member can only delete their own
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
@@ -303,24 +234,35 @@ module.exports = router;
  * @swagger
  * components:
  *   schemas:
- *     Booking:
+ *     BookingResponse:
  *       type: object
  *       required:
- *         - exhibition
+ *         - _id
+ *         - user
  *         - boothType
  *         - amount
+ *         - createdAt
+ *         - updatedAt
  *       properties:
  *         _id:
  *           type: string
  *           description: Auto-generated MongoDB ObjectId
  *           readOnly: true
  *         user:
- *           type: string
+ *           type: object
  *           description: Reference to the user who made the booking
  *           readOnly: true
- *         exhibition:
- *           type: string
- *           description: Reference to the exhibition being booked
+ *           required:
+ *             - _id
+ *             - name
+ *             - email
+ *           properties:
+ *             _id:
+ *               type: string
+ *             name:
+ *               type: string
+ *             email:
+ *               type: string
  *         boothType:
  *           type: string
  *           enum: [small, big]
@@ -339,4 +281,41 @@ module.exports = router;
  *           format: date-time
  *           description: Auto-generated timestamp of last update
  *           readOnly: true
+ *     PopulatedBooking:
+ *       allOf:
+ *         - $ref: '#/components/schemas/BookingResponse'
+ *         - type: object
+ *           required:
+ *             - exhibition
+ *           properties:
+ *             exhibition:
+ *               type: object
+ *               description: Reference to the exhibition being booked
+ *               required:
+ *                 - _id
+ *                 - name
+ *                 - description
+ *                 - venue
+ *                 - startDate
+ *                 - durationDay
+ *                 - smallBoothQuota
+ *                 - bigBoothQuota
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 venue:
+ *                   type: string
+ *                 startDate:
+ *                   type: string
+ *                   format: date-time
+ *                 durationDay:
+ *                   type: integer
+ *                 smallBoothQuota:
+ *                   type: integer
+ *                 bigBoothQuota:
+ *                   type: integer
  */
