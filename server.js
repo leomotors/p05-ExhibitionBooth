@@ -1,3 +1,4 @@
+const path = require("node:path");
 const express = require("express");
 const connectDB = require("./config/db");
 const auth = require("./routes/auth");
@@ -109,7 +110,7 @@ app.get('/openapi.json', (req, res) => {
 app.get("/scalar", (req, res) => {
   res.setHeader(
     "Content-Security-Policy",
-    "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';"
+    "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval';"
   );
   res.sendFile(path.join(__dirname, "routes", "scalar.html"));
 });
@@ -159,7 +160,8 @@ const PORT = process.env.PORT || 5000;
 const server = app.listen(
   PORT,
   console.log(
-  `BookYourBooth API Server running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${PORT}`
+  `BookYourBooth API Server running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${PORT}
+Access Scalar UI at http://localhost:${PORT}/scalar`
   )
 );
 
