@@ -1,11 +1,13 @@
 {
   "name": "bookyourbooth",
   "version": "1.0.0",
+  "private": true,
   "description": "BookYourBooth - A RESTful API for Exhibition Booth Booking System with user authentication and authorization",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "dotenv -e config/config.env -v NODE_ENV=development -- nodemon server.js",
+    "start": "dotenv -e config/config.env -v NODE_ENV=production -- node server.js"
   },
   "author": "TNPTW",
   "license": "ISC",
@@ -15,7 +17,6 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dayjs": "^1.11.18",
-    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^6.7.0",

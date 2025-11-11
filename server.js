@@ -1,5 +1,4 @@
 const express = require("express");
-const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const auth = require("./routes/auth");
 const exhibitions = require("./routes/exhibitions");
@@ -14,9 +13,6 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-
-// Load environment variables
-dotenv.config({ path: "./config/config.env" });
 
 // Connect to database
 connectDB();
@@ -106,6 +102,17 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'BookYourBooth API Documentation'
 }));
+app.get('/openapi.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerDocs);
+});
+app.get("/scalar", (req, res) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';"
+  );
+  res.sendFile(path.join(__dirname, "routes", "scalar.html"));
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
