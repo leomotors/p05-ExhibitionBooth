@@ -170,6 +170,10 @@ const exhibitionsController = require("../controllers/exhibitions");
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - success
+ *                 - count
+ *                 - data
  *               properties:
  *                 success:
  *                   type: boolean
@@ -201,6 +205,9 @@ const exhibitionsController = require("../controllers/exhibitions");
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - success
+ *                 - data
  *               properties:
  *                 success:
  *                   type: boolean
@@ -235,6 +242,9 @@ const exhibitionsController = require("../controllers/exhibitions");
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - success
+ *                 - data
  *               properties:
  *                 success:
  *                   type: boolean
@@ -269,6 +279,9 @@ const exhibitionsController = require("../controllers/exhibitions");
  *           application/json:
  *             schema:
  *               type: object
+ *               required:
+ *                 - success
+ *                 - data
  *               properties:
  *                 success:
  *                   type: boolean
