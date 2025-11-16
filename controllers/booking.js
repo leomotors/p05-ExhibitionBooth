@@ -119,7 +119,7 @@ exports.createBooking = async (req, res) => {
 
     const totalBooked = bookedBooths.length > 0 ? bookedBooths[0].total : 0;
 
-    if (totalBooked + req.body.amount > availableQuota) {
+    if (req.body.amount > availableQuota) {
       return res.status(400).json({
         success: false,
         message: `Not enough ${req.body.boothType} booths available`
@@ -317,44 +317,6 @@ exports.updateBooking = async (req, res) => {
       });
     }
 
-    res.status(500).json({
-      success: false,
-      message: 'Server Error',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
-
-// @desc    Delete booking
-// @route   DELETE /api/v1/bookings/:id
-// @access  Private (Admin: any booking, Member: own booking)
-exports.deleteBooking = async (req, res) => {
-  try {
-    let query = { _id: req.params.id };
-    if (req.user.role !== 'admin') {
-      query.user = req.user.id;
-    }
-
-    const booking = await Booking.findOne(query);
-    if (!booking) {
-      return res.status(404).json({
-        success: false,
-        message: 'Booking not found'
-      });
-    }
-
-    const exhibition = await Exhibition.findById(booking.exhibition);
-    // Restore booth count
-    exhibition.availableBooths += booking.boothAmount;
-    await exhibition.save();
-
-    await Booking.deleteOne({ _id: booking._id });
-
-    res.json({
-      success: true,
-      message: 'Booking deleted successfully'
-    });
-  } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Server Error',
