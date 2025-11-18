@@ -1,7 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { protect, authorize } = require('../middleware/auth');
-const bookingController = require('../controllers/booking');
+const { protect, authorize } = require("../middleware/auth");
+const bookingController = require("../controllers/booking");
 
 /**
  * @swagger
@@ -40,7 +40,7 @@ const bookingController = require('../controllers/booking');
  *         description: Not authorized
  *       500:
  *         description: Server Error
- * 
+ *
  *   post:
  *     summary: Create a new booking
  *     description: Create a new booth booking for an exhibition (member only)
@@ -95,11 +95,10 @@ const bookingController = require('../controllers/booking');
  */
 
 // Get all bookings (admin) or own bookings (member)
-router.get('/', protect, bookingController.getBookings);
+router.get("/", protect, bookingController.getBookings);
 
 // Create a new booking (member only)
-router.post('/', protect, authorize('member'), bookingController.createBooking);
-
+router.post("/", protect, authorize("member"), bookingController.createBooking);
 
 /**
  * @swagger
@@ -136,7 +135,7 @@ router.post('/', protect, authorize('member'), bookingController.createBooking);
  *         description: Unauthorized
  *       404:
  *         description: Booking not found
- *       
+ *
  *   put:
  *     summary: Update booking
  *     description: admin can update any booking, member can only update their own
@@ -189,7 +188,7 @@ router.post('/', protect, authorize('member'), bookingController.createBooking);
  *         description: Unauthorized
  *       404:
  *         description: Booking not found
- *   
+ *
  *   delete:
  *     summary: Delete booking
  *     description: admin can delete any booking, member can only delete their own
@@ -213,13 +212,13 @@ router.post('/', protect, authorize('member'), bookingController.createBooking);
  */
 
 // Get single booking by ID
-router.get('/:id', protect, bookingController.getBooking);
+router.get("/:id", protect, bookingController.getBooking);
 
 // Update a booking (admin can update any, member can only update their own)
-router.put('/:id', protect, bookingController.updateBooking);
+router.put("/:id", protect, bookingController.updateBooking);
 
 // Delete a booking (admin can delete any, member can only delete own bookings)
-router.delete('/:id', protect, bookingController.deleteBooking);
+router.delete("/:id", protect, bookingController.deleteBooking);
 
 module.exports = router;
 
@@ -289,33 +288,5 @@ module.exports = router;
  *             - exhibition
  *           properties:
  *             exhibition:
- *               type: object
- *               description: Reference to the exhibition being booked
- *               required:
- *                 - _id
- *                 - name
- *                 - description
- *                 - venue
- *                 - startDate
- *                 - durationDay
- *                 - smallBoothQuota
- *                 - bigBoothQuota
- *               properties:
- *                 _id:
- *                   type: string
- *                 name:
- *                   type: string
- *                 description:
- *                   type: string
- *                 venue:
- *                   type: string
- *                 startDate:
- *                   type: string
- *                   format: date-time
- *                 durationDay:
- *                   type: integer
- *                 smallBoothQuota:
- *                   type: integer
- *                 bigBoothQuota:
- *                   type: integer
+ *               $ref: '#/components/schemas/ExhibitionResponse'
  */
